@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <title>SlickGrid example 4: Model</title>
+  <link rel="stylesheet" href="./slickGrid/slick.grid.css" type="text/css"/>
+  <link rel="stylesheet" href="./slickGrid/controls/slick.pager.css" type="text/css"/>
+  <link rel="stylesheet" href="./slickGrid/css/smoothness/jquery-ui-1.8.16.custom.css" type="text/css"/>
+  <link rel="stylesheet" href="./slickGrid/examples/examples.css" type="text/css"/>
+  <link rel="stylesheet" href="./slickGrid/controls/slick.columnpicker.css" type="text/css"/>
+  <style>
+    .cell-title {
+      font-weight: bold;
+    }
+    .cell-effort-driven {
+      text-align: center;
+    }
+    .cell-selection {
+      border-right-color: silver;
+      border-right-style: solid;
+      background: #f5f5f5;
+      color: gray;
+      text-align: right;
+      font-size: 10px;
+    }
+    .slick-row.selected .cell-selection {
+      background-color: transparent; /* show default selected row background */
+    }
+  </style>
+</head>
+<body>
+<div id="myGrid" style="width:600px;height:500px;"></div>
+
+
+
+
+<script src="./slickGrid/lib/firebugx.js"></script>
+
+<script src="./slickGrid/lib/jquery-1.7.min.js"></script>
+<script src="./slickGrid/lib/jquery-ui-1.8.16.custom.min.js"></script>
+<script src="./slickGrid/lib/jquery.event.drag-2.2.js"></script>
+
+<script src="./slickGrid/slick.core.js"></script>
+<script src="./slickGrid/slick.formatters.js"></script>
+<script src="./slickGrid/slick.editors.js"></script>
+<script src="./slickGrid/plugins/slick.rowselectionmodel.js"></script>
+<script src="./slickGrid/slick.grid.js"></script>
+<script src="./slickGrid/slick.dataview.js"></script>
+<script src="./slickGrid/controls/slick.pager.js"></script>
+<script src="./slickGrid/controls/slick.columnpicker.js"></script>
+<script src="myGrid.js"></script>
+
+<script>
+ $(function () {
+    $.ajax({
+      type:"GET",
+      url:"http://localhost:8080/gridData.json",
+      dataType:"JSON",
+      success: function(response){
+        var grid = new MySlickGrid.MyGrid("#myGrid",response);
+      },
+      error:function(xhr,ajaxOptions,throwError){
+        alert(xhr.status);
+        alert(thrownError);
+      }
+    });
+ });
+
+</script>
+</body>
+</html>
