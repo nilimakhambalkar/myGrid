@@ -59,7 +59,7 @@
 	    dataView.setFilter(myFilter);
 	    dataView.endUpdate(); 
 	}
-	
+
 	function myFilter(item, args) {
 	  var searchStrParts = searchString.split(":"),
 	  	searchField = "searchStr",
@@ -73,7 +73,7 @@
 
 	  		}
 
-	  		item["searchStr"] = searchStr;
+	  		item["searchStr"] = searchStr.toLowerCase();
 	  }
 
 	  if(searchStrParts.length > 1){
@@ -83,13 +83,13 @@
 
 	  }
 	  else{
-	  	searchFor = searchString;
+	  	searchFor = searchString.toLowerCase();
 	  }
 	  console.log("myFilter", logCounter, searchField, searchString, JSON.stringify(columnIndex));
 	  
 	  logCounter++;
 
-	  if (searchFor != "" && item[searchField].indexOf(searchFor) == -1) {
+	  if (searchFor != "" && item[searchField].toLowerCase().indexOf(searchFor.toLowerCase()) == -1) {
 	    return false;
 	  }
 	  return true;
