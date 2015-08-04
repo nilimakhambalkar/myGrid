@@ -4,11 +4,17 @@
 	      MyGrid: ExtendedSlickGrid
 	    }
   	});
+  	var grid;
+	var dataView;
+	var searchList = [];
+	var searchString = "";
+	var logCounter = 0;
+
 	function ExtendedSlickGrid(container, data, gridColumns, options) {
 		var searchTemplate = '<div id="inlineFilterPanel" style="background:#dddddd;padding:3px;color:black; position: relative;left: 0px;top: 0px;">Search :  <input type="text" id="txtSearch"></div><div id="gContainer"></div>';
 		$(container).append(searchTemplate);
 		$("#gContainer").height($(container).height() - $("#inlineFilterPanel").height() - 6);
-
+		 $("#txtSearch").addClear();
 		var columns = [];
 	
 		if( gridColumns == null){
@@ -23,26 +29,72 @@
 			   	
 			  };
 		}
-		var grid = new Slick.Grid("#gContainer", data, columns, options);	 
+		 dataView = new Slick.Data.DataView();
+		 grid = new Slick.Grid("#gContainer", dataView, columns, options);	
+
+
+		  // wire up model events to drive the grid
+		  dataView.onRowCountChanged.subscribe(function (e, args) {
+		    grid.updateRowCount();
+		    grid.render();
+		  });
+		  dataView.onRowsChanged.subscribe(function (e, args) {
+		    grid.invalidateRows(args.rows);
+		    grid.render();
+		  });
+
+		  $(container).on('keyup', '#txtSearch', function(e) {
+			    console.log(this.value)
+			    logCounter = 0;
+	        if (e.which == 27) {
+	            this.value = "";
+	        }
+	        searchString = this.value;
+	        dataView.refresh();
+		});
+		
+
+	    dataView.beginUpdate();
+	    dataView.setItems(data);
+	    dataView.setFilter(myFilter);
+	    dataView.endUpdate(); 
 	}
-	var dataView;
-	var searchString = "";
-	// wire up the search textbox to apply the filter to the model
-	  $("#txtSearch").keyup(function (e) {
-	    Slick.GlobalEditorLock.cancelCurrentEdit();
-	    // clear on Esc
-	    if (e.which == 27) {
-	      this.value = "";
-	    }
-	    searchString = this.value;
-	    updateFilter();
-	  });
-	  function updateFilter() {
-	    dataView.setFilterArgs({
-	      percentCompleteThreshold: percentCompleteThreshold,
-	      searchString: searchString
-	    });
-	    dataView.refresh();
+	
+	function myFilter(item, args) {
+	  var searchStrParts = searchString.split(":"),
+	  	searchField = "searchStr",
+	  	columnIndex,
+	  	searchFor;
+
+	  if(!item.hasOwnProperty("searchStr")){
+	  		var searchStr = "";
+	  		for(var prop in item){
+	  			searchStr+=item[prop];
+
+	  		}
+
+	  		item["searchStr"] = searchStr;
 	  }
 
+	  if(searchStrParts.length > 1){
+	  	searchFor = searchStrParts[1];
+	  	columnIndex = parseInt(searchStrParts[0]);
+	  	searchField = (grid.getColumns()[columnIndex-1]).field;
+
+	  }
+	  else{
+	  	searchFor = searchString;
+	  }
+	  console.log("myFilter", logCounter, searchField, searchString, JSON.stringify(columnIndex));
+	  
+	  logCounter++;
+
+	  if (searchFor != "" && item[searchField].indexOf(searchFor) == -1) {
+	    return false;
+	  }
+	  return true;
+	}
+
+
+	
 }(jQuery));

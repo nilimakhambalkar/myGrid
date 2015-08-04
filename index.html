@@ -49,6 +49,8 @@
 <script src="./slickGrid/controls/slick.pager.js"></script>
 <script src="./slickGrid/controls/slick.columnpicker.js"></script>
 <script src="myGrid.js"></script>
+<script type="text/javascript" src="addclear.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.1/underscore-min.js"></script>
 
 <script>
  $(function () {
@@ -57,6 +59,10 @@
       url:"http://localhost:8080/gridData.json",
       dataType:"JSON",
       success: function(response){
+        var counter= 0;
+        _.each(response,function(item){
+          item["id"] = counter++;
+        })
         var grid = new MySlickGrid.MyGrid("#myGrid",response);
       },
       error:function(xhr,ajaxOptions,throwError){
