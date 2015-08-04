@@ -26,11 +26,25 @@
     .slick-row.selected .cell-selection {
       background-color: transparent; /* show default selected row background */
     }
+    .highlight {
+    background-color: #fff34d;
+    -moz-border-radius: 5px; /* FF1+ */
+    -webkit-border-radius: 5px; /* Saf3-4 */
+    border-radius: 5px; /* Opera 10.5, IE 9, Saf5, Chrome */
+    -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.7); /* FF3.5+ */
+    -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.7); /* Saf3.0+, Chrome */
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.7); /* Opera 10.5+, IE 9.0 */
+  }
+
+  .highlight {
+      padding:1px 4px;
+      margin:0 -4px;
+  }
   </style>
 </head>
 <body>
 <div id="myGrid" style="width:600px;height:500px;"></div>
-
+<p>work involved in developing a web site for t</p>
 
 
 
@@ -51,10 +65,11 @@
 <script src="myGrid.js"></script>
 <script type="text/javascript" src="addclear.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.1/underscore-min.js"></script>
+<script type="text/javascript" src="highlight.js"></script>
 
 <script>
  $(function () {
-    $.ajax({
+  $.ajax({
       type:"GET",
       url:"http://localhost:8080/gridData.json",
       dataType:"JSON",
@@ -64,6 +79,8 @@
           item["id"] = counter++;
         })
         var grid = new MySlickGrid.MyGrid("#myGrid",response);
+
+        
       },
       error:function(xhr,ajaxOptions,throwError){
         alert(xhr.status);

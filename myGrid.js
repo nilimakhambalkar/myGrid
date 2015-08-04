@@ -50,6 +50,10 @@
 	            this.value = "";
 	        }
 	        searchString = this.value;
+	        if ( searchString ) {
+            // highlight the new term
+            $('.slick-cell').highlight( searchString );
+        	}
 	        dataView.refresh();
 		});
 		
