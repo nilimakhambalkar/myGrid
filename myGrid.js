@@ -4,22 +4,36 @@
 	      MyGrid: ExtendedSlickGrid
 	    }
   	});
-  	var grid;
-	var dataView;
-	var searchList = [];
-	var searchString = "";
-	var logCounter = 0;
+  	var grid,
+	 	dataView;
+		searchList = [],
+	 	searchValue = "",
+		searchColumnValue = "",
+	  	searchColumnIndex = -1,
+	 logCounter = 0,
+	 visibleColumns = [],//this will allow us to search only on visible fields
+	 columns = [];
+	 visibleColumnsValues = "visibleColumnsValues";
+
 
 	function ExtendedSlickGrid(container, data, gridColumns, options) {
 		var searchTemplate = '<div id="inlineFilterPanel" style="background:#dddddd;padding:3px;color:black; position: relative;left: 0px;top: 0px;">Search :  <input type="text" id="txtSearch"></div><div id="gContainer"></div>';
 		$(container).append(searchTemplate);
 		$("#gContainer").height($(container).height() - $("#inlineFilterPanel").height() - 6);
-		 $("#txtSearch").addClear();
-		var columns = [];
-	
+		$("#txtSearch").addClear({
+		  onClear: function(){
+		    $('.slick-cell').removeHighlight( );
+		  }
+		});
+		  	
 		if( gridColumns == null){
 			$.each(data[0], function(key, val ) {
-			  columns.push({id: key, name: key, field: key, sortable: true});
+				if(key!="id"){
+					var colDef = {id: key, name: key, field: key, sortable: true, width:250}
+					visibleColumns.push(key);
+			  		columns.push(colDef);
+				}
+				
 			});
 		}
 		if(options == null){
@@ -31,6 +45,12 @@
 		}
 		 dataView = new Slick.Data.DataView();
 		 grid = new Slick.Grid("#gContainer", dataView, columns, options);	
+		 grid.onSort.subscribe(function(e, args) {
+		   var comparer = function(a, b) {
+		    return (a[args.sortCol.field] > b[args.sortCol.field]) ? 1 : -1;
+		  }
+			dataView.sort(comparer, args.sortAsc);
+		});
 
 
 		  // wire up model events to drive the grid
@@ -42,19 +62,43 @@
 		    grid.invalidateRows(args.rows);
 		    grid.render();
 		  });
+		  grid.onViewportChanged.subscribe(function (e, args) {
+		   $('.slick-cell').highlight( searchValue );
+		  });
+
 
 		  $(container).on('keyup', '#txtSearch', function(e) {
-			    console.log(this.value)
-			    logCounter = 0;
+			console.log(this.value)
+			logCounter = 0;
+			searchColumnIndex = -1; //reset search column index every time on change;
+			searchField = visibleColumnsValues;
+			$('.slick-cell').removeHighlight();
+
 	        if (e.which == 27) {
 	            this.value = "";
 	        }
-	        searchString = this.value;
-	        if ( searchString ) {
-            // highlight the new term
-            $('.slick-cell').highlight( searchString );
-        	}
+	        searchValue = this.value;
+
+	        var searchParts = searchValue.split(":");
+
+	        if(searchParts.length > 1){
+	        	searchColumnIndex = parseInt(searchParts[0]) - 1;
+	        	searchValue = searchColumnValue = searchParts[1];
+	        	searchField = (grid.getColumns()[searchColumnIndex]).field
+	        }
+
 	        dataView.refresh();
+
+	        if(e.keyCode == 8){
+
+	        }
+	        if ( searchValue ) {
+            	// highlight the new term
+            	if(searchColumnIndex==-1)
+            	$('.slick-cell').highlight( searchValue );
+            	else
+            	$('.l'+searchColumnIndex).highlight( searchValue );
+        	}
 		});
 		
 
@@ -62,41 +106,34 @@
 	    dataView.setItems(data);
 	    dataView.setFilter(myFilter);
 	    dataView.endUpdate(); 
+	    this.dataView = dataView;
 	}
 
 	function myFilter(item, args) {
-	  var searchStrParts = searchString.split(":"),
-	  	searchField = "searchStr",
-	  	columnIndex,
-	  	searchFor;
-
-	  if(!item.hasOwnProperty("searchStr")){
+	  
+	  if(!item.hasOwnProperty(visibleColumnsValues)){
 	  		var searchStr = "";
 	  		for(var prop in item){
-	  			searchStr+=item[prop];
+	  			//console.log(prop, visibleColumns);
+	  			if(visibleColumns.indexOf(prop)!=-1)
+	  			searchStr+=searchStr.length == 0 ? item[prop] : "~" + item[prop];
 
 	  		}
 
-	  		item["searchStr"] = searchStr.toLowerCase();
+	  		item[visibleColumnsValues] = searchStr.toLowerCase();
 	  }
 
-	  if(searchStrParts.length > 1){
-	  	searchFor = searchStrParts[1];
-	  	columnIndex = parseInt(searchStrParts[0]);
-	  	searchField = (grid.getColumns()[columnIndex-1]).field;
-
-	  }
-	  else{
-	  	searchFor = searchString.toLowerCase();
-	  }
-	  console.log("myFilter", logCounter, searchField, searchString, JSON.stringify(columnIndex));
-	  
 	  logCounter++;
+	  
+		if(searchValue.length == 0){
+			return true;
+		}
+		else if (item[searchField].toLowerCase().indexOf(searchValue.toLowerCase()) != -1) {
+		    return true;
+		}
 
-	  if (searchFor != "" && item[searchField].toLowerCase().indexOf(searchFor.toLowerCase()) == -1) {
-	    return false;
-	  }
-	  return true;
+		console.log(item[searchField]);
+		return false;
 	}
 
 
