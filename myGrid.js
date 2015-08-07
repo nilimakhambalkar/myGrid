@@ -50,8 +50,8 @@
 		    return (a[args.sortCol.field] > b[args.sortCol.field]) ? 1 : -1;
 		  }
 			dataView.sort(comparer, args.sortAsc);
+			$('.slick-cell').highlight( searchValue );
 		});
-
 
 		  // wire up model events to drive the grid
 		  dataView.onRowCountChanged.subscribe(function (e, args) {
@@ -62,8 +62,8 @@
 		    grid.invalidateRows(args.rows);
 		    grid.render();
 		  });
-		  grid.onViewportChanged.subscribe(function (e, args) {
-		   $('.slick-cell').highlight( searchValue );
+		  grid.onScroll.subscribe(function (e, args) {
+		   	$('.slick-cell').highlight( searchValue );
 		  });
 
 
@@ -86,7 +86,15 @@
 	        	searchValue = searchColumnValue = searchParts[1];
 	        	searchField = (grid.getColumns()[searchColumnIndex]).field
 	        }
+	        var filterData = [];
+	        var len = dataView.getLength();
 
+	        for (i = 0; i < len; i++) { 
+			    filterData.push(dataView.getLength());
+			}
+
+	        dataView.setItems(data);
+	    	dataView.setFilter(myFilter);
 	        dataView.refresh();
 
 	        if(e.keyCode == 8){
@@ -99,6 +107,8 @@
             	else
             	$('.l'+searchColumnIndex).highlight( searchValue );
         	}
+
+
 		});
 		
 
