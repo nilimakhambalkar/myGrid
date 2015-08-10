@@ -84,7 +84,8 @@
 
 
 		  $(container).on('keyup', '#txtSearch', function(e) {
-			console.log(this.value)
+			console.log("&&&&&&"+this.value);
+			
 			logCounter = 0;
 			searchColumnIndex = -1; //reset search column index every time on change;
 			searchField = visibleColumnsValues;
@@ -96,11 +97,13 @@
 	        searchValue = this.value;
 
 	        var searchParts = searchValue.split(":");
-
+			console("searchColumnIndex******", searchParts)
 	        if(searchParts.length > 1){
 	        	searchColumnIndex = parseInt(searchParts[0]) - 1;
 	        	searchValue = searchColumnValue = searchParts[1];
 	        	searchField = (grid.getColumns()[searchColumnIndex]).field
+
+
 	        }
 
 	        dataView.refresh();
@@ -153,6 +156,7 @@
         	}else{
         		$('.l'+searchColumnIndex).highlight( searchValue );
         	}
+        		
         }
 	}
 	function reset(){
