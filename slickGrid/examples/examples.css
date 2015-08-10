@@ -6,7 +6,7 @@
 }
 
 body {
-  background: beige;
+
   padding: 10px;
   margin: 8px;
 }
@@ -227,4 +227,8 @@ input.editor-checkbox {
   border: 0;
 }
 
-
+ .slick-cell-checkboxsel {
+     
+      border-right-color: silver;
+      border-right-style: solid;
+    }

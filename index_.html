@@ -8,6 +8,10 @@
   <link rel="stylesheet" href="./slickGrid/css/smoothness/jquery-ui-1.8.16.custom.css" type="text/css"/>
   <link rel="stylesheet" href="./slickGrid/examples/examples.css" type="text/css"/>
   <link rel="stylesheet" href="./slickGrid/controls/slick.columnpicker.css" type="text/css"/>
+
+  <link rel="stylesheet" href="./jstree/dist/themes/default/style.min.css" />
+
+
   <style>
     .cell-title {
       font-weight: bold;
@@ -27,24 +31,24 @@
       background-color: transparent; /* show default selected row background */
     }
     .highlight {
-    background-color: #fff34d;
-    -moz-border-radius: 5px; /* FF1+ */
-    -webkit-border-radius: 5px; /* Saf3-4 */
-    border-radius: 5px; /* Opera 10.5, IE 9, Saf5, Chrome */
-    -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.7); /* FF3.5+ */
-    -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.7); /* Saf3.0+, Chrome */
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.7); /* Opera 10.5+, IE 9.0 */
-  }
+        color: #000;
+        background-color: #ff0;
+      }
 
-  .highlight {
-      padding:1px 4px;
-      margin:0 -4px;
-  }
+    h1 { font-size:1.8em; }
+    .demo { overflow:auto; border:1px solid silver; min-height:100px; }
   </style>
 </head>
 <body>
-<div id="myGrid" style="width:600px;height:500px;"></div>
-<p>work involved in developing a web site for t</p>
+  <div >
+
+  </div>
+  <h1>AJAX demo</h1>
+  <div class="row">
+      <div id="ajax" class="pull-left" style="border:1px solid black;width:300px;height:300px;" ></div>
+      <div id="myGrid" style="width:920px;height:300px;" class="pull-right"></div> 
+  </div>
+
 
 
 
@@ -66,9 +70,21 @@
 <script type="text/javascript" src="addclear.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.1/underscore-min.js"></script>
 <script type="text/javascript" src="highlight.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<script src="./jstree/dist/jstree.min.js"></script>
+<script src="myTree.js"></script>
+
+
+<script src="./slickGrid/plugins/slick.checkboxselectcolumn.js"></script>
 
 <script>
+var grid, 
+    tree;
  $(function () {
+
+  // ajax demo
+  tree = new JSTree.ExtendedJSTree("#ajax","root.json");
+  
   $.ajax({
       type:"GET",
       url:"http://localhost:8080/gridData.json",
@@ -77,9 +93,10 @@
         var counter= 0;
         _.each(response,function(item){
           item["id"] = counter++;
+          item["Updated Date"] = "May, 27 2015";
         })
-        var grid = new MySlickGrid.MyGrid("#myGrid",response);
-
+        grid = new MySlickGrid.MyGrid("#myGrid",response);
+      //  $('#myGrid').css('display','none');
         
       },
       error:function(xhr,ajaxOptions,throwError){
@@ -87,6 +104,8 @@
         alert(thrownError);
       }
     });
+
+
  });
 
 </script>
